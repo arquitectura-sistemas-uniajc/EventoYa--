@@ -1,0 +1,14 @@
+{
+  "name": "eventoya-backend",
+  "version": "1.0.0",
+  "description": "API Backend para EventoYa - Programación 5",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "ioredis": "^5.3.2",
+    "pg": "^8.11.3"
+  }
+}
