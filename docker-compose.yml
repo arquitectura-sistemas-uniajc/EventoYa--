@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  # Proxy / Balanceador Nginx
+  proxy:
+    image: nginx:alpine
+    container_name: eventoya_proxy
+    ports:
+      - "80:80"
+    depends_on:
+      - api1
+      - api2
+    networks:
+      - frontend_net
+
+  # Instancia 1 de la API (Node.js/Express)
+  api1:
+    build: .
+    container_name: eventoya_api_1
+    environment:
+      - PORT=3000
+      - DB_HOST=db
+      - REDIS_HOST=cache
+    networks:
+      - frontend_net
+      - backend_net
+    depends_on:
+      - db
+      - cache
+
+  # Instancia 2 de la API (Réplica para balanceo de carga)
+  api2:
+    build: .
+    container_name: eventoya_api_2
+    environment:
+      - PORT=3000
+      - DB_HOST=db
+      - REDIS_HOST=cache
+    networks:
+      - frontend_net
+      - backend_net
+    depends_on:
+      - db
+      - cache
+
+  # Caché y Colas en Memoria (Redis)
+  cache:
+    image: redis:7-alpine
+    container_name: eventoya_cache
+    networks:
+      - backend_net
+
+  # Base de Datos Relacional Aislada (PostgreSQL)
+  db:
+    image: postgres:15-alpine
+    container_name: eventoya_db
+    environment:
+      POSTGRES_DB: eventoya
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secretpassword
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend_net
+
+networks:
+  frontend_net:
+    driver: bridge
+  backend_net:
+    internal: true # Red privada: la base de datos no es alcanzable desde fuera
+
+volumes:
+  postgres_data:
