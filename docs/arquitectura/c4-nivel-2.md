@@ -13,7 +13,7 @@ flowchart LR
         BD["Base de Datos Transaccional\n[PostgreSQL 15]"]
     end
 
-    Usuario -->|"HTTPS / HTTP TCP/80"| Portal
+    Usuario -->|"HTTP TCP/80"| Portal
     Portal -->|"HTTP/JSON TCP/3000"| API
     API -->|"RESP TCP/6379"| Cache
     API -->|"PostgreSQL Wire Protocol TCP/5432"| BD
